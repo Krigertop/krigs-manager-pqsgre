@@ -1,34 +1,24 @@
 import * as React from "react";
-import { createContext, useCallback, useContext } from "react";
-import { ExtensionStorage } from "@bacons/apple-targets";
-
-// Initialize storage with your group ID
-const storage = new ExtensionStorage(
-  "group.com.<user_name>.<app_name>"
-);
+import { createContext, useCallback, useContext, useState } from "react";
 
 type WidgetContextType = {
   refreshWidget: () => void;
+  widgetData: any;
+  setWidgetData: (data: any) => void;
 };
 
 const WidgetContext = createContext<WidgetContextType | null>(null);
 
 export function WidgetProvider({ children }: { children: React.ReactNode }) {
-  // Update widget state whenever what we want to show changes
-  React.useEffect(() => {
-    // set widget_state to null if we want to reset the widget
-    // storage.set("widget_state", null);
-
-    // Refresh widget
-    ExtensionStorage.reloadWidget();
-  }, []);
+  const [widgetData, setWidgetData] = useState(null);
 
   const refreshWidget = useCallback(() => {
-    ExtensionStorage.reloadWidget();
+    console.log('Widget refresh requested');
+    // In a real implementation, this would update widget data
   }, []);
 
   return (
-    <WidgetContext.Provider value={{ refreshWidget }}>
+    <WidgetContext.Provider value={{ refreshWidget, widgetData, setWidgetData }}>
       {children}
     </WidgetContext.Provider>
   );

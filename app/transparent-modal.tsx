@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { router, Stack } from "expo-router";
 import { Button } from "@/components/button";
+import { colors } from "@/styles/commonStyles";
 
 export default function TransparentModalDemo() {
   return (
@@ -23,8 +24,15 @@ export default function TransparentModalDemo() {
               </Button>
             </View>
             <Text style={styles.description}>
-              Peekaboo 👻
+              This modal has a transparent background overlay
             </Text>
+            <View style={styles.content}>
+              <Text style={styles.property}>Features:</Text>
+              <Text style={styles.detail}>• Transparent backdrop</Text>
+              <Text style={styles.detail}>• Tap outside to close</Text>
+              <Text style={styles.detail}>• Centered presentation</Text>
+              <Text style={styles.detail}>• Custom styling</Text>
+            </View>
           </ScrollView>
         </Pressable>
       </Pressable>
@@ -35,22 +43,19 @@ export default function TransparentModalDemo() {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   modal: {
-    backgroundColor: 'white',
+    backgroundColor: colors.card,
     borderRadius: 20,
     maxWidth: 400,
     width: '100%',
     maxHeight: '80%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   container: {
     padding: 20,
@@ -64,46 +69,32 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: colors.text,
   },
   description: {
     fontSize: 16,
     lineHeight: 24,
     marginBottom: 24,
-    color: '#666',
+    color: colors.textSecondary,
   },
   content: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: colors.backgroundAlt,
     padding: 20,
     borderRadius: 12,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   property: {
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 12,
-    color: '#007AFF',
+    color: colors.primary,
   },
   detail: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#333',
-  },
-  feature: {
-    backgroundColor: '#e8f4fd',
-    padding: 16,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#007AFF',
-  },
-  featureTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#007AFF',
-  },
-  featureText: {
-    fontSize: 14,
-    color: '#333',
+    color: colors.text,
     marginBottom: 4,
   },
 });

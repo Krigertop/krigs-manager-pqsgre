@@ -8,7 +8,6 @@ import { StorageCard } from '@/components/StorageCard';
 import { SearchBar } from '@/components/SearchBar';
 import { useStorage } from '@/hooks/useStorage';
 import { colors, commonStyles } from '@/styles/commonStyles';
-import { krigSColors } from '@/constants/Colors';
 
 export default function HomeScreen() {
   const {
@@ -55,7 +54,7 @@ export default function HomeScreen() {
 
   const renderHeaderRight = () => (
     <Pressable
-      onPress={() => router.push('/add-item' as any)}
+      onPress={() => router.push('/add-item')}
       style={styles.headerButton}
     >
       <IconSymbol name="plus" color={colors.text} size={24} />
@@ -64,7 +63,7 @@ export default function HomeScreen() {
 
   const renderHeaderLeft = () => (
     <Pressable
-      onPress={() => router.push('/settings' as any)}
+      onPress={() => router.push('/settings')}
       style={styles.headerButton}
     >
       <IconSymbol name="gear" color={colors.text} size={24} />
@@ -84,6 +83,7 @@ export default function HomeScreen() {
       <Stack.Screen
         options={{
           title: 'KrigS',
+          headerShown: true,
           headerStyle: {
             backgroundColor: colors.background,
           },
@@ -132,11 +132,41 @@ export default function HomeScreen() {
           {/* Search Bar */}
           <SearchBar onSearch={handleSearch} />
 
+          {/* Quick Actions */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Quick Actions</Text>
+            <View style={styles.quickActionsContainer}>
+              <Pressable 
+                style={styles.quickAction}
+                onPress={() => router.push('/favorites')}
+              >
+                <IconSymbol name="heart.fill" size={24} color={colors.primary} />
+                <Text style={styles.quickActionText}>Favorites</Text>
+              </Pressable>
+              
+              <Pressable 
+                style={styles.quickAction}
+                onPress={() => router.push('/all-items')}
+              >
+                <IconSymbol name="list.bullet" size={24} color={colors.accent} />
+                <Text style={styles.quickActionText}>All Items</Text>
+              </Pressable>
+              
+              <Pressable 
+                style={styles.quickAction}
+                onPress={() => router.push('/categories')}
+              >
+                <IconSymbol name="folder" size={24} color={colors.success} />
+                <Text style={styles.quickActionText}>Categories</Text>
+              </Pressable>
+            </View>
+          </View>
+
           {/* Categories Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Categories</Text>
-              <Pressable onPress={() => router.push('/categories' as any)}>
+              <Pressable onPress={() => router.push('/categories')}>
                 <Text style={styles.seeAllText}>See All</Text>
               </Pressable>
             </View>
@@ -150,7 +180,7 @@ export default function HomeScreen() {
                 <CategoryCard
                   key={category.id}
                   category={category}
-                  onPress={() => router.push(`/category/${category.name}` as any)}
+                  onPress={() => router.push(`/category/${encodeURIComponent(category.name)}`)}
                 />
               ))}
             </ScrollView>
@@ -163,7 +193,7 @@ export default function HomeScreen() {
                 {searchQuery ? `Search Results (${filteredItems.length})` : 'Recent Items'}
               </Text>
               {!searchQuery && (
-                <Pressable onPress={() => router.push('/all-items' as any)}>
+                <Pressable onPress={() => router.push('/all-items')}>
                   <Text style={styles.seeAllText}>See All</Text>
                 </Pressable>
               )}
@@ -192,7 +222,7 @@ export default function HomeScreen() {
                 <StorageCard
                   key={item.id}
                   item={item}
-                  onPress={() => router.push(`/item/${item.id}` as any)}
+                  onPress={() => router.push(`/item/${item.id}`)}
                   onFavorite={() => toggleFavorite(item.id)}
                   onDelete={() => handleDeleteItem(item.id)}
                 />
@@ -260,12 +290,12 @@ const styles = StyleSheet.create({
   },
   section: {
     marginTop: 24,
+    paddingHorizontal: 16,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
     marginBottom: 12,
   },
   sectionTitle: {
@@ -276,6 +306,26 @@ const styles = StyleSheet.create({
   seeAllText: {
     fontSize: 14,
     color: colors.accent,
+    fontWeight: '500',
+  },
+  quickActionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 12,
+  },
+  quickAction: {
+    alignItems: 'center',
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 16,
+    minWidth: 80,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  quickActionText: {
+    fontSize: 12,
+    color: colors.text,
+    marginTop: 8,
     fontWeight: '500',
   },
   categoriesContainer: {

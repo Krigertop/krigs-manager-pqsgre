@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { router, Stack } from "expo-router";
 import { Button } from "@/components/button";
+import { colors } from "@/styles/commonStyles";
 
 export default function ModalDemo() {
   return (
@@ -9,6 +10,8 @@ export default function ModalDemo() {
       <Stack.Screen
         options={{
           title: "Standard Modal",
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
           headerLeft: () => (
             <Button variant="ghost" onPress={() => router.back()}>
               Close
@@ -19,8 +22,15 @@ export default function ModalDemo() {
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Standard Modal</Text>
         <Text style={styles.description}>
-          Fancy seeing you here!
+          This is a demo modal screen for KrigS
         </Text>
+        <View style={styles.content}>
+          <Text style={styles.property}>Modal Features:</Text>
+          <Text style={styles.detail}>• Full screen presentation</Text>
+          <Text style={styles.detail}>• Custom header with close button</Text>
+          <Text style={styles.detail}>• Scrollable content</Text>
+          <Text style={styles.detail}>• Consistent theming</Text>
+        </View>
       </ScrollView>
     </>
   );
@@ -30,40 +40,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.background,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
+    color: colors.text,
   },
   description: {
     fontSize: 16,
     lineHeight: 24,
     marginBottom: 24,
     textAlign: 'center',
-    color: '#666',
+    color: colors.textSecondary,
   },
   content: {
-    backgroundColor: 'white',
+    backgroundColor: colors.card,
     padding: 20,
     borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   property: {
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 12,
-    color: '#007AFF',
+    color: colors.primary,
   },
   detail: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#333',
+    color: colors.text,
+    marginBottom: 4,
   },
 });
