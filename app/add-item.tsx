@@ -28,6 +28,8 @@ export default function AddItemScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleSave = async () => {
+    console.log('Save button pressed');
+    
     if (!title.trim()) {
       Alert.alert('Error', 'Please enter a title');
       return;
@@ -45,6 +47,16 @@ export default function AddItemScreen() {
         .split(',')
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0);
+
+      console.log('Adding item with data:', {
+        title: title.trim(),
+        content: content.trim(),
+        type: selectedType,
+        category: selectedCategory,
+        tags: tagArray,
+        emoji: selectedEmoji,
+        url: url.trim() || undefined,
+      });
 
       await addItem({
         title: title.trim(),
@@ -70,16 +82,24 @@ export default function AddItemScreen() {
   };
 
   const renderHeaderRight = () => (
-    <Button
+    <Pressable
       onPress={handleSave}
       disabled={loading}
-      loading={loading}
-      size="sm"
-      style={styles.saveButton}
+      style={[
+        styles.headerSaveButton,
+        loading && styles.headerSaveButtonDisabled
+      ]}
     >
-      Save
-    </Button>
+      <Text style={[
+        styles.headerSaveButtonText,
+        loading && styles.headerSaveButtonTextDisabled
+      ]}>
+        {loading ? 'Saving...' : 'Save'}
+      </Text>
+    </Pressable>
   );
+
+  const canSave = title.trim() && (content.trim() || url.trim());
 
   return (
     <>
@@ -153,7 +173,7 @@ export default function AddItemScreen() {
 
             {/* Title Input */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Title</Text>
+              <Text style={styles.sectionTitle}>Title *</Text>
               <TextInput
                 style={styles.input}
                 value={title}
@@ -168,7 +188,7 @@ export default function AddItemScreen() {
             {(selectedType === 'link' || selectedType === 'file') && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>
-                  {selectedType === 'link' ? 'URL' : 'File Path/URL'}
+                  {selectedType === 'link' ? 'URL *' : 'File Path/URL *'}
                 </Text>
                 <TextInput
                   style={styles.input}
@@ -185,7 +205,7 @@ export default function AddItemScreen() {
             {/* Content Input */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>
-                {selectedType === 'note' ? 'Content' : 'Description'}
+                {selectedType === 'note' ? 'Content *' : 'Description'}
               </Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
@@ -242,6 +262,22 @@ export default function AddItemScreen() {
               <Text style={styles.helperText}>
                 Separate tags with commas (e.g., work, important, project)
               </Text>
+            </View>
+
+            {/* Bottom Save Button - Always Visible */}
+            <View style={styles.bottomButtonContainer}>
+              <Button
+                onPress={handleSave}
+                disabled={!canSave || loading}
+                loading={loading}
+                style={[
+                  styles.bottomSaveButton,
+                  !canSave && styles.bottomSaveButtonDisabled
+                ]}
+                textStyle={styles.bottomSaveButtonText}
+              >
+                {loading ? 'Saving...' : 'Save Item'}
+              </Button>
             </View>
 
             <View style={styles.bottomSpacing} />
@@ -360,8 +396,44 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontStyle: 'italic',
   },
-  saveButton: {
+  headerSaveButton: {
     paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: colors.primary,
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  headerSaveButtonDisabled: {
+    backgroundColor: colors.textSecondary,
+    opacity: 0.6,
+  },
+  headerSaveButtonText: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  headerSaveButtonTextDisabled: {
+    color: colors.textSecondary,
+  },
+  bottomButtonContainer: {
+    marginTop: 32,
+    marginBottom: 16,
+  },
+  bottomSaveButton: {
+    backgroundColor: colors.primary,
+    paddingVertical: 16,
+    borderRadius: 12,
+    width: '100%',
+  },
+  bottomSaveButtonDisabled: {
+    backgroundColor: colors.textSecondary,
+    opacity: 0.6,
+  },
+  bottomSaveButtonText: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'center',
   },
   bottomSpacing: {
     height: 40,
