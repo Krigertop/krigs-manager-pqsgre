@@ -1,181 +1,311 @@
-import React from "react";
-import { Stack, router } from "expo-router";
-import { FlatList, Pressable, StyleSheet, View, Text } from "react-native";
-// Components
-import { IconCircle } from "@/components/IconCircle";
-import { IconSymbol } from "@/components/IconSymbol";
-import { BodyScrollView } from "@/components/BodyScrollView";
-import { Button } from "@/components/button";
-// Constants & Hooks
-import { backgroundColors } from "@/constants/Colors";
 
-const ICON_COLOR = "#007AFF";
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
+import { Stack, router } from 'expo-router';
+import { IconSymbol } from '@/components/IconSymbol';
+import { CategoryCard } from '@/components/CategoryCard';
+import { StorageCard } from '@/components/StorageCard';
+import { SearchBar } from '@/components/SearchBar';
+import { useStorage } from '@/hooks/useStorage';
+import { colors, commonStyles } from '@/styles/commonStyles';
+import { krigSColors } from '@/constants/Colors';
 
 export default function HomeScreen() {
+  const {
+    items,
+    categories,
+    loading,
+    deleteItem,
+    toggleFavorite,
+    searchItems,
+    getStats,
+  } = useStorage();
 
-  const modalDemos = [
-    {
-      title: "Standard Modal",
-      description: "Full screen modal presentation",
-      route: "/modal",
-      color: "#007AFF",
-    },
-    {
-      title: "Form Sheet",
-      description: "Bottom sheet with detents and grabber",
-      route: "/formsheet",
-      color: "#34C759",
-    },
-    {
-      title: "Transparent Modal",
-      description: "Overlay without obscuring background",
-      route: "/transparent-modal",
-      color: "#FF9500",
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredItems, setFilteredItems] = useState(items);
+
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      setFilteredItems(searchItems(searchQuery));
+    } else {
+      setFilteredItems(items.slice(0, 10)); // Show recent 10 items
     }
-  ];
+  }, [searchQuery, items, searchItems]);
 
-  const renderModalDemo = ({ item }: { item: typeof modalDemos[0] }) => (
-    <View style={styles.demoCard}>
-      <View style={[styles.demoIcon, { backgroundColor: item.color }]}>
-        <IconSymbol name="square.grid.3x3" color="white" size={24} />
-      </View>
-      <View style={styles.demoContent}>
-        <Text style={styles.demoTitle}>{item.title}</Text>
-        <Text style={styles.demoDescription}>{item.description}</Text>
-      </View>
-      <Button
-        variant="outline"
-        size="sm"
-        onPress={() => router.push(item.route as any)}
-      >
-        Try It
-      </Button>
-    </View>
-  );
+  const stats = getStats();
 
-  const renderEmptyList = () => (
-    <BodyScrollView contentContainerStyle={styles.emptyStateContainer}>
-      <IconCircle
-        emoji=""
-        backgroundColor={
-          backgroundColors[Math.floor(Math.random() * backgroundColors.length)]
-        }
-      />
-    </BodyScrollView>
-  );
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleDeleteItem = (id: string) => {
+    Alert.alert(
+      'Delete Item',
+      'Are you sure you want to delete this item?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive',
+          onPress: () => deleteItem(id)
+        },
+      ]
+    );
+  };
 
   const renderHeaderRight = () => (
     <Pressable
-      onPress={() => {console.log("plus")}}
-      style={styles.headerButtonContainer}
+      onPress={() => router.push('/add-item' as any)}
+      style={styles.headerButton}
     >
-      <IconSymbol name="plus" color={ICON_COLOR} />
+      <IconSymbol name="plus" color={colors.text} size={24} />
     </Pressable>
   );
 
   const renderHeaderLeft = () => (
     <Pressable
-      onPress={() => {console.log("gear")}}
-      style={styles.headerButtonContainer}
+      onPress={() => router.push('/settings' as any)}
+      style={styles.headerButton}
     >
-      <IconSymbol
-        name="gear"
-        color={ICON_COLOR}
-      />
+      <IconSymbol name="gear" color={colors.text} size={24} />
     </Pressable>
   );
+
+  if (loading) {
+    return (
+      <View style={[commonStyles.container, { justifyContent: 'center' }]}>
+        <Text style={commonStyles.text}>Loading KrigS...</Text>
+      </View>
+    );
+  }
 
   return (
     <>
       <Stack.Screen
         options={{
-          title: "Building the app...",
+          title: 'KrigS',
+          headerStyle: {
+            backgroundColor: colors.background,
+          },
+          headerTintColor: colors.text,
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
           headerRight: renderHeaderRight,
           headerLeft: renderHeaderLeft,
         }}
       />
-      <View style={styles.container}>
-        <FlatList
-          data={modalDemos}
-          renderItem={renderModalDemo}
-          keyExtractor={(item) => item.route}
-          contentContainerStyle={styles.listContainer}
-          contentInsetAdjustmentBehavior="automatic"
+      
+      <View style={commonStyles.wrapper}>
+        <ScrollView 
+          style={styles.scrollView}
           showsVerticalScrollIndicator={false}
-        />
+        >
+          {/* Welcome Section */}
+          <View style={styles.welcomeSection}>
+            <Text style={styles.welcomeTitle}>Welcome to KrigS</Text>
+            <Text style={styles.welcomeSubtitle}>
+              Your personal storage manager
+            </Text>
+            
+            <View style={styles.statsContainer}>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{stats.totalItems}</Text>
+                <Text style={styles.statLabel}>Items</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{stats.categories.length}</Text>
+                <Text style={styles.statLabel}>Categories</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>
+                  {items.filter(item => item.isFavorite).length}
+                </Text>
+                <Text style={styles.statLabel}>Favorites</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Search Bar */}
+          <SearchBar onSearch={handleSearch} />
+
+          {/* Categories Section */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Categories</Text>
+              <Pressable onPress={() => router.push('/categories' as any)}>
+                <Text style={styles.seeAllText}>See All</Text>
+              </Pressable>
+            </View>
+            
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoriesContainer}
+            >
+              {categories.map((category) => (
+                <CategoryCard
+                  key={category.id}
+                  category={category}
+                  onPress={() => router.push(`/category/${category.name}` as any)}
+                />
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Recent Items Section */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>
+                {searchQuery ? `Search Results (${filteredItems.length})` : 'Recent Items'}
+              </Text>
+              {!searchQuery && (
+                <Pressable onPress={() => router.push('/all-items' as any)}>
+                  <Text style={styles.seeAllText}>See All</Text>
+                </Pressable>
+              )}
+            </View>
+
+            {filteredItems.length === 0 ? (
+              <View style={styles.emptyState}>
+                <IconSymbol
+                  name="tray"
+                  size={48}
+                  color={colors.textSecondary}
+                  style={styles.emptyIcon}
+                />
+                <Text style={styles.emptyTitle}>
+                  {searchQuery ? 'No results found' : 'No items yet'}
+                </Text>
+                <Text style={styles.emptySubtitle}>
+                  {searchQuery 
+                    ? 'Try adjusting your search terms'
+                    : 'Tap the + button to add your first item'
+                  }
+                </Text>
+              </View>
+            ) : (
+              filteredItems.map((item) => (
+                <StorageCard
+                  key={item.id}
+                  item={item}
+                  onPress={() => router.push(`/item/${item.id}` as any)}
+                  onFavorite={() => toggleFavorite(item.id)}
+                  onDelete={() => handleDeleteItem(item.id)}
+                />
+              ))
+            )}
+          </View>
+
+          {/* Bottom Spacing */}
+          <View style={styles.bottomSpacing} />
+        </ScrollView>
       </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
-  headerSection: {
+  welcomeSection: {
     padding: 20,
-    paddingBottom: 16,
-    backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
+    alignItems: 'center',
   },
-  headerTitle: {
-    fontSize: 24,
+  welcomeTitle: {
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#666',
-    lineHeight: 22,
-  },
-  listContainer: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-  },
-  demoCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  demoIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  demoContent: {
-    flex: 1,
-  },
-  demoTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
+    color: colors.text,
     marginBottom: 4,
   },
-  demoDescription: {
+  welcomeSubtitle: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    marginBottom: 20,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.accent,
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  statDivider: {
+    width: 1,
+    height: 30,
+    backgroundColor: colors.border,
+    marginHorizontal: 16,
+  },
+  section: {
+    marginTop: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  seeAllText: {
     fontSize: 14,
-    color: '#666',
-    lineHeight: 18,
+    color: colors.accent,
+    fontWeight: '500',
   },
-  emptyStateContainer: {
-    alignItems: "center",
-    gap: 8,
-    paddingTop: 100,
+  categoriesContainer: {
+    paddingHorizontal: 8,
   },
-  headerButtonContainer: {
-    padding: 6, // Just enough padding around the 24px icon
+  emptyState: {
+    alignItems: 'center',
+    padding: 40,
+  },
+  emptyIcon: {
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  headerButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: colors.backgroundAlt,
+  },
+  bottomSpacing: {
+    height: 40,
   },
 });

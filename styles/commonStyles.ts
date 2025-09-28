@@ -1,14 +1,21 @@
+
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { krigSColors } from '@/constants/Colors';
 
 export const colors = {
-  primary: '#162456',    // Material Blue
-  secondary: '#193cb8',  // Darker Blue
-  accent: '#64B5F6',     // Light Blue
-  background: '#101824',  // Keeping dark background
-  backgroundAlt: '#162133',  // Keeping dark background
-  text: '#e3e3e3',       // Keeping light text
-  grey: '#90CAF9',       // Light Blue Grey
-  card: '#193cb8',       // Keeping dark card background
+  primary: krigSColors.primary,
+  secondary: krigSColors.primaryLight,
+  accent: krigSColors.gold,
+  background: krigSColors.background,
+  backgroundAlt: krigSColors.backgroundSecondary,
+  text: krigSColors.text,
+  textSecondary: krigSColors.textSecondary,
+  grey: krigSColors.textMuted,
+  card: krigSColors.card,
+  border: krigSColors.border,
+  success: krigSColors.success,
+  warning: krigSColors.warning,
+  error: krigSColors.error,
 };
 
 export const buttonStyles = StyleSheet.create({
@@ -19,6 +26,11 @@ export const buttonStyles = StyleSheet.create({
   },
   backButton: {
     backgroundColor: colors.backgroundAlt,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  goldButton: {
+    backgroundColor: colors.accent,
     alignSelf: 'center',
     width: '100%',
   },
@@ -46,11 +58,18 @@ export const commonStyles = StyleSheet.create({
     width: '100%',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '800',
     textAlign: 'center',
     color: colors.text,
     marginBottom: 10
+  },
+  subtitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: colors.text,
+    marginBottom: 8
   },
   text: {
     fontSize: 16,
@@ -58,6 +77,14 @@ export const commonStyles = StyleSheet.create({
     color: colors.text,
     marginBottom: 8,
     lineHeight: 24,
+    textAlign: 'center',
+  },
+  textSecondary: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: colors.textSecondary,
+    marginBottom: 8,
+    lineHeight: 20,
     textAlign: 'center',
   },
   section: {
@@ -71,19 +98,39 @@ export const commonStyles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   card: {
-    backgroundColor: colors.backgroundAlt,
-    borderColor: colors.grey,
+    backgroundColor: colors.card,
+    borderColor: colors.border,
     borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
+    borderRadius: 12,
+    padding: 16,
     marginVertical: 8,
     width: '100%',
-    boxShadow: '0px 2px 3px rgba(0, 0, 0, 0.1)',
-    elevation: 2,
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.3)',
+    elevation: 4,
+  },
+  cardHover: {
+    backgroundColor: colors.backgroundAlt,
   },
   icon: {
     width: 60,
     height: 60,
-    tintColor: "white",
+    tintColor: colors.text,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    width: '100%',
+    marginVertical: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  column: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
   },
 });
